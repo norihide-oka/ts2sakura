@@ -1,0 +1,35 @@
+{
+  "name": "ts2jscript",
+  "version": "0.0.1",
+  "description": "TypeScript をトランスパイルして、 JScript(WSH) で実行できるjsファイルを作成するためのテンプレートです。",
+  "main": "src/ts/index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:build && npm run test:run",
+    "test:build": "rollup -c rollup.config.js --environment FROM:./src/test/index.ts,TO:./dist/test/index.js",
+    "test:run": "cscript //NoLogo .\\dist\\test\\index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "norihide-oka/ts2jscript"
+  },
+  "keywords": [
+    "TypeScript",
+    "WSH",
+    "JScript"
+  ],
+  "author": "norihide-oka",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/preset-env": "^7.24.6",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^25.0.8",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "core-js": "^3.37.1",
+    "iconv-lite": "^0.6.3",
+    "rollup": "^4.18.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.5"
+  }
+}

@@ -2,7 +2,8 @@ import typescript from "@rollup/plugin-typescript"
 import babel from "@rollup/plugin-babel"
 import commonjs from "@rollup/plugin-commonjs"
 import nodeResolve from "@rollup/plugin-node-resolve"
-import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs'
+import { resolve, relative } from "path"
 import encoder from 'iconv-lite'
 const { encode } = encoder
 
@@ -10,6 +11,26 @@ let files = []
 if(process.env.FROM && process.env.TO)
 {
 	files.push([process.env.FROM, process.env.TO])
+}
+else
+{
+	const current = "./"
+	const dir = "./src/ts"
+	const dist = "./dist"
+	const lib = "lib"
+	const ext = /\.ts$/
+	function readdir(dir, root = false)
+	{
+		return readdirSync(dir, {withFileTypes: true})
+			.filter(i => i.name !== lib && (i.isDirectory() || ext.test(i.name)))
+			.map(i => i.isDirectory() ? readdir(resolve(dir, i.name)) : resolve(dir, i.name))
+			.flat()
+	}
+	files.push(...readdir(dir, true)
+		.map(i => relative(dir, i))
+		.map(i => [resolve(dir, i), resolve(dist, i.replace(ext, ".js"))])
+		.map(i => i.map(ii => relative(current, ii)))
+	)
 }
 
 function customPlugin() {

@@ -1694,6 +1694,11 @@ declare var Editor: {
 	GetFilename(): string
 
 	/**
+	 * 保存時のファイル名が返ります。
+	 */
+	GetSaveFilename(): string
+
+	/**
 	 * 選択部分の文字列を取得
 	 * @param i1 予約(0:固定)
 	 */
@@ -1750,6 +1755,13 @@ declare var Editor: {
 	ChangeTabWidth(i1: number): number
 
 	/**
+	 * 折り返し桁数を指定します。
+	 * @param int1 折り返し桁数を指定します。(0:現在の折り返し桁数を取得する|10～10240:折り返し桁数)
+	 * @returns 現在の折り返し桁数
+	 */
+	ChangeWrapColm(int1: number): number
+
+	/**
 	 * テキストの選択状態を取得
 	 * @returns 選択状態(0:非選択状態|1:選択中|2:矩形選択中)
 	 */
@@ -1765,7 +1777,7 @@ declare var Editor: {
 	 * 選択開始桁を取得
 	 * @returns 選択開始桁（1から始まる）
 	 */
-	GetSelectColmFrom(): number
+	GetSelectColumnFrom(): number
 
 	/**
 	 * 選択終了行を取得
@@ -1777,7 +1789,7 @@ declare var Editor: {
 	 * 選択終了桁を取得
 	 * @returns 選択終了桁（1から始まる）
 	 */
-	GetSelectColmTo(): number
+	GetSelectColumnTo(): number
 
 	/**
 	 * 挿入／上書きモードの取得
@@ -1808,6 +1820,412 @@ declare var Editor: {
 	 * @returns 0:無効|1:可能
 	 */
 	IsPossibleRedo(): 0 | 1
+
+	/**
+	 * 現在適用されているタイプ別設定と指定した拡張子を持ったファイルを開いた場合に適用されるタイプ別設定が同じ課を調べます。
+	 * @param str1 調べる拡張子を指定します。(ピリオドを除いた文字列)
+	 * @returns 0:不一致|1:一致
+	 */
+	IsCurTypeExt(str1: string): 0 | 1
+
+	/**
+	 * 2 つそれぞれの拡張子を持ったファイルを開いた場合に適用されるタイプ別設定が同じかどうかを調べます。
+	 * @param str1 調べる1つめの拡張子を指定します。(ピリオドを除いた文字列)
+	 * @param str2 調べる2つめの拡張子を指定します。(ピリオドを除いた文字列)
+	 * @returns 0:不一致|1:一致
+	 */
+	IsSameTypeExt(str1: string, str2: string): number
+
+	/**
+	 * テキスト入力ダイアログを表示し、入力された文字列を返します。
+	 * @param str1 表示メッセージ
+	 * @param str2 既定の値
+	 * @param int1 最大入力文字数
+	 * @returns 入力された文字列
+	 */
+	InputBox(str1: string, str2: string, int1: number): string
+
+	/**
+	 * メッセージボックスを表示します。
+	 * @param str1 表示メッセージ
+	 * @param int1 メッセージボックス種別(
+	 *     表示するボタン(0x0:OK|0x1:OK／キャンセル |0x2:中止／再試行／無視|0x3:はい／いいえ／キャンセル|0x4:はい／いいえ|0x5:再試行／キャンセル|0x6 キャンセル／再実行／続行)|
+	 *     アイコン(0x10:エラー|0x20:確認|0x30:警告|0x40:情報)|
+	 *     デフォルトボタン(0x000:1番目|0x100:2番目|0x200:3番目|0x300:4番目)|
+	 *     モーダル状態(0x0000:APPLMODAL|0x1000:SYSTEMMODAL|0x2000:TASKMODAL)
+	 * )
+	 * @returns 0:OK|1:キャンセル|3:中止|4:再試行|5:無視|6:はい|7:いいえ|16:再実行|17:続行
+	 */
+	MessageBox(str1: string, int1: number): 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 16 | 17
+
+	/**
+	 * エラーメッセージボックスを表示します。「エラーアイコン」＋「OKボタン」
+	 * @param str1 表示メッセージ
+	 * @returns 0:OK
+	 */
+	ErrorMsg(str1: string): 0
+	/**
+	 * 警告メッセージボックスを表示します。「警告アイコン」＋「OKボタン」
+	 * @param str1 表示メッセージ
+	 * @returns 0:OK
+	 */
+	WarnMsg(str1: string): 0
+	/**
+	 * 情報メッセージボックスを表示します。「情報アイコン」＋「OKボタン」
+	 * @param str1 表示メッセージ
+	 * @returns 0:OK
+	 */
+	InfoMsg(str1: string): 0
+	/**
+	 * OKキャンセルメッセージボックスを表示します。「確認アイコン」＋「OK／キャンセルボタン」
+	 * @param str1 表示メッセージ
+	 * @returns 0:OK|1:キャンセル
+	 */
+	OkCancelBox(str1: string): 0 | 1
+	/**
+	 * はい/いいえメッセージボックスを表示します。「確認アイコン」＋「はい／いいえボタン」
+	 * @param str1 表示メッセージ
+	 * @returns 6:はい|7:いいえ
+	 */
+	YesNoBox(str1: string): 6 | 7
+
+	/**
+	 * ファイルを開くダイアログを表示します。
+	 * @param str1 既定のファイルまたはフォルダパス
+	 * @param str2 フィルタ文字列
+	 * @returns 選択ファイルパス名。キャンセル押下時は空文字列
+	 */
+	FileOpenDialog(str1: string, str2: string): string
+
+	/**
+	 * ファイル保存ダイアログを表示します。
+	 * @param str1 既定のファイルまたはフォルダパス
+	 * @param str2 フィルタ文字列
+	 * @returns 択ファイルパス名。キャンセル押下時は空文字列
+	 */
+	FileSaveDialog(str1: string, str2: string): string
+
+	/**
+	 * フォルダを開くダイアログを表示します。
+	 * @param str1 表示メッセージ
+	 * @param str2 既定のファイルまたはフォルダパス
+	 * @returns 選択ファイルパス名。キャンセル押下時は空文字列
+	 */
+	FolderDialog(str1: string, str2: string): string
+
+		/**
+	 * 2つのバージョン文字列を比較します。
+	 * @param str1 バージョン文字列1
+	 * @param str2 バージョン文字列2
+	 * @returns 0:等しい|0以下:バージョン文字列1が古い|0以上:バージョン文字列1が新しい
+	 */
+	CompareVersion(str1: string, str2: string): number
+
+	/**
+	 * 指定した時間だけマクロを止めます。
+	 * @param int1 スリープ時間（ミリ秒）
+	 * @returns 0固定
+	 */
+	Sleep(int1: number): 0
+
+	/**
+	 * クリップボードの文字列を取得します。
+	 * @param int1 予約、0固定
+	 * @returns クリップボード文字列
+	 */
+	GetClipboard(int1: 0): string
+
+	/**
+	 * クリップボードに文字列を設定します。
+	 * @param int1 オプション(0x00:通常コピー|0x01:矩形選択|0x02:ラインモード)
+	 * @param str1 設定する文字列
+	 */
+	SetClipboard(int1: 0 | 1 | 2 | 3, str1: string): 0
+
+	/**
+	 * レイアウト行番号からロジック行番号を取得します。
+	 * @param int1 (折り返し単位)行番号(1開始)
+	 * @returns ロジック(改行単位)行番号(1開始)
+	 */
+	LayoutToLogicLineNum(int1: number): number
+
+	/**
+	 * ロジック座標からレイアウト行番号を取得します。
+	 * @param int1 ロジック行番号(1開始)
+	 * @param int2 ロジック桁番号(1開始)
+	 * @returns レイアウト行番号(1開始)
+	 */
+	LogicToLayoutLineNum(int1: number, int2: number): number
+
+	/**
+	 * レイアウト座標からロジック桁番号を求めます。
+	 * @param int1 レイアウト行番号(1開始)
+	 * @param int2 レイアウト桁番号(1開始)
+	 * @returns ロジック桁番号(1開始)
+	 */
+	LineColumnToIndex(int1: number, int2: number): number
+
+	/**
+	 * ロジック座標からレイアウト桁番号を求めます。
+	 * @param int1 ロジック行番号(1開始)
+	 * @param int2 ロジック桁番号(1開始)
+	 * @returns レイアウト桁番号(1開始)
+	 */
+	LineIndexToColumn(int1: number, int2: number): number
+
+	/**
+	 * Cookie値の取得
+	 * @param str1 スコープ名("document"|"window")
+	 * @param str2 Cookie名(文字小文字を区別)
+	 * @returns 設定されていたCookie値が返ります。Cookieが設定されていなかった場合、空文字列が返ります。
+	 */
+	GetCookie(str1: string, str2: string): string
+
+	/**
+	 * Cookie値の取得
+	 * @param str1 スコープ名("document"|"window")
+	 * @param str2 Cookie名(文字小文字を区別)
+	 * @param str3 デフォルト値
+	 * @returns 設定されていたCookie値が返ります。Cookieが設定されていなかった場合、デフォルト値が返ります。
+	 */
+	GetCookieDefault(str1: string, str2: string, str3: string): string
+
+	/**
+	 * Cookie値の設定
+	 * @param str1 スコープ名("document"|"window")
+	 * @param str2 Cookie名(文字小文字を区別)
+	 * @param str3 設定値
+	 * @returns 0:正常終了|1:スコープ名が不正だった|2:Cookie名が不正だった
+	 */
+	SetCookie(str1: string, str2: string, str3: string): 0 | 1 | 2
+
+	/**
+	 * Cookie値の削除
+	 * @param str1 スコープ名("document"|"window")
+	 * @param str2 Cookie名(文字小文字を区別)
+	 * @returns 0:正常終了|1:スコープ名が不正だった|2:Cookie名が不正だった|5:Cookie名に該当するCookieが存在しなかった
+	 */
+	DeleteCookie(str1: string, str2: atring): 0 | 1 | 2 | 5
+
+	/**
+	 * 該当のスコープの全Cookie名取得
+	 * @param str1 スコープ名("document"|"window")
+	 * @returns 該当のスコープの全Cookie名がカンマ区切りで取得できます。
+	 */
+	GetCookieNames(str1: string): string
+
+	/**
+	 * 画面描画の表示・非表示を取得します。
+	 * @returns 0:非表示に設定されている|1:表示に設定されている
+	 */
+	GetDrawSwitch(): 0 | 1
+
+	/**
+	 * 画面描画の表示・非表示を設定します。
+	 * @param int1 表示設定値(0:非表示|1:表示)
+	 * @returns 0:設定する前は非表示に設定されていた|1:設定する前は表示に設定されていた
+	 */
+	SetDrawSwitch(int1: 0 | 1): 0 | 1
+
+	/**
+	 * ステータスバーに文字列を表示します。
+	 * @param str1 表示文字列
+	 * @param int1 表示オプション(
+	 *     0:ステータスバーが非表示のとき、右上に表示(省略時規定値)|
+	 *     1:ステータスバーが非表示のとき、InfoMsgに表示|
+	 *     2:ステータスバーが非表示のとき、何もしない
+	 * )
+	 */
+	StatusMsg(str1: string, int1: 0 | 1 | 2): void
+
+	/**
+	 * ステータスバーが表示されているかを取得します。
+	 * @returns 0:非表示|1:表示
+	 */
+	IsShownStatus(): 0 | 1
+
+	/**
+	 * 音をならします。OSのシステムで設定されている音がなります。
+	 * @param int1 音の選択(-1:ビープ音|0:一般の警告音(省略時規定値)|1:エラー音|2:問い合わせ音|3:警告音|4:情報音)
+	 */
+	MsgBeep(int1: -1 | 0 | 1 | 2 | 3 | 4): void
+
+	/**
+	 * Undoバッファを強制登録します。中身がない場合は登録されません。参照カウンタの数は維持されます。
+	 */
+	CommitUndoBuffer(): void
+
+	/**
+	 * Undoバッファをまとめるように指示を出します。参照カウンタを1増加させます。
+	 */
+	AddRefUndoBuffer(): void
+
+	/**
+	 * AddRefUndoBufferを実行した回数呼び出すとUndoバッファの内容をRedo/Undoのリストに登録します。中身がない場合は登録されません。
+	 * @example
+	 * ```
+	 * InsText('a');
+	 * AddRefUndoBuffer(); // これ以降、Undoバッファをまとめる
+	 * InsText('b');
+	 * InsText('c');
+	 * SetUndoBuffer(); // ここで'bc'がまとめてUndoバッファのリストに登録される
+	 * InsText('d'); // ここは個別にUndoバッファのリストに登録される
+	 * AddRefUndoBuffer(); // これ以降、Undoバッファをまとめる
+	 * InsText('e');
+	 * InsText('f');
+	 * CommitUndoBuffer(); // ここで'ef'がまとめてUndoバッファのリストに登録される
+	 * // CommitUndoBuffer() は、SetUndoBuffer() + AddRefUndoBuffer() の意味になる
+	 * InsText('g');
+	 * InsText('h');
+	 * SetUndoBuffer(); // ここで'gh'がまとめてUndoバッファのリストに登録される
+	 * InsText('i'); // iがUndoバッファに登録される
+	 * SetUndoBuffer(); // ここでは、何もUndoバッファに登録されない
+	 * ```
+	 */
+	SetUndoBuffer(): void
+
+	/**
+	 * Undoバッファに現在のカーソル位置を追加し登録します。
+	 */
+	AppendUndoBufferCursor(): void
+
+	/**
+	 * 文字列の幅を取得します。
+	 * @param str1 対象文字列
+	 * @param int1 開始Offset
+	 * @returns 文字列の幅
+	 */
+	GetStrWidth(str1: string, int1: number): number
+
+	/**
+	 * 文字列のレイアウト幅を取得します。
+	 * @param str1 対象文字列
+	 * @param int1 開始Offset
+	 */
+	GetStrLayoutLength(str1: string, int1: number): numner
+
+	/**
+	 * ルーラー等の1文字幅あたりのレイアウト幅を取得します。
+	 * @returns レイアウト幅
+	 */
+	GetDefaultCharLength(): number
+
+	/**
+	 * クリップボードを空にします。
+	 */
+	ClipboardEmpty(): void
+
+	/**
+	 * クリップボードに指定したフォーマットの形式があるか調べます。
+	 * @param str1 クリップボードフォーマット名
+	 * @returns 0:該当フォーマットなし|1:該当フォーマットあり
+	 */
+	IsIncludeClipboardFormat(str1 :string): 0 | 1
+
+	/**
+	 * クリップボードに指定したフォーマットの形式で文字列を取得します。
+	 * @param str1 クリップボードフォーマット名
+	 * @param int2 モード(
+	 *     -2:サクラ標準処理(使えるフォーマットのみ)|
+	 *     -1:x00-xffをU+00-U+ffにマップ|
+	 *     0～:文字コードセット|
+	 *     99:文字コードセット(自動認識)
+	 * )
+	 * @param int3 終端モード(
+	 *     -1:モード依存|
+	 *     0:バイナリ|
+	 *     1:ASCII互換の0x00で切り取り|
+	 *     2:UTF-16で切り取り|
+	 *     4:UTF-32で切り取り
+	 * )
+	 * @returns クリップボードの内容の文字列
+	 */
+	GetClipboardByFormat(str1: string, int2: number, int3: number): string
+
+	/**
+	 * 
+	 * @param str1 データ(文字列)
+	 * @param str2 クリップボードフォーマット名
+	 * @param int3 モード(
+	 *     -2:サクラ標準処理(使えるフォーマットのみ)|
+	 *     -1:x00-xffをU+00-U+ffにマップ|
+	 *     0～:文字コードセット|
+	 *     99:文字コードセット(自動認識)
+	 * )
+	 * @param int4 終端モード(
+	 *     -1:モード依存|
+	 *     0:バイナリ|
+	 *     1:ASCII互換の0x00で切り取り|
+	 *     2:UTF-16で切り取り|
+	 *     4:UTF-32で切り取り
+	 * )
+	 * @returns 0:失敗|1:成功
+	 */
+	SetClipboardByFormat(str1: string, str2: string, int3: number, int4: number): 0 | 1
+
+
+	/**
+	 * 行番号の属性値を取得します。
+	 * @param int1 行番号1開始(0==カーソル行)
+	 * @param int2 属性(
+	 *     0:変更行(0:未変更|1:修正あり)|
+	 *     1:変更行シーケンス(シーケンス番号)|
+	 *     2:ブックマーク(0:未設定|1:ブックマーク行)|
+	 *     3:DIFFマーク(0:未変更|1:追加|2:変更|3:削除|4:削除(EOF以降))|
+	 *     4:関数リストマーク(0:未設定|1:設定あり)|
+	 * )
+	 */
+	GetLineAttribute(int1: number, int2: 0 | 1 | 2 | 3 | 4): number
+
+	/**
+	 * ロック状態の取得
+	 * @returns 0:未ロック|1:通常選択ロック|2:矩形選択中でロック
+	 */
+	IsTextSelectingLock(): 0 | 1 | 2
+
+	/**
+	 * 画面スクロール位置を一番上の行の行番号で設定します。
+	 * @param int1 行番号
+	 */
+	SetViewTop(int1: number): void
+
+	/**
+	 * 画面スクロール位置を一番左の桁の桁番号で設定します。
+	 * @param int1 桁番号
+	 */
+	SetViewLeft(int1: number): void
+
+	/**
+	 * 画面に表示されている行数を取得します。
+	 * @returns 画面に表示されている行数
+	 */
+	GetViewLines(): number
+
+	/**
+	 * 画面に表示されている桁数を取得します。
+	 * @returns 画面に表示されている桁数
+	 */
+	GetViewColumns(): number
+
+	/**
+	 * メニューを表示します。
+	 * @param int1 表示位置(0:マウス位置に表示|1:カーソル位置に表示)
+	 * @param str2 メニュー文字列、カンマ区切りで指定します。
+	 *     先頭に以下の文字を付けるとそれぞれの意味になります。複数設定する場合は[CD]のように書きます。
+	 *     [C] チェックボックス
+	 *     [D]　非活性(Disable)
+	 *     [R] ラジオボタン
+	 *     [S] サブメニュー
+	 *     [E] サブメニュー終了（サブメニューの最後の要素に書く)
+	 *     [EE] ２段分サブメニューを終了(3段はEEE,4段はEEEE...)
+	 *     [B] メニューの折り返し(これを指定すると描画が旧テーマ風)
+	 *     "["そのものを先頭に表示したい場合は、"[][str]"のように書く必要があります。
+	 *     アクセスキーを付ける場合は &A のように書きます。& そのものは && と書いてください。
+	 *     要素を「-」(スラッシュ単独)にすると、その要素はセパレータです。
+	 * @example
+	 * CreateMenu(0, "[C]チェック項目(&A),[S]サブメニュー(&B),サブメニュー1, [E]サブメニュー2,-,[D]非活性")
+	 */
+	CreateMenu(int1: 0 | 1, str2: string): number
 
 	/**
 	 * トレース出力

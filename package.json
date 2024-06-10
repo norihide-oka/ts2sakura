@@ -1,6 +1,6 @@
 {
   "name": "ts2jscript",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "TypeScript をトランスパイルして、 JScript(WSH) で実行できるjsファイルを作成するためのテンプレートです。",
   "main": "src/ts/index.ts",
   "type": "module",

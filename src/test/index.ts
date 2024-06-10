@@ -4,4 +4,4 @@ let items = [
 	"3:ううう",
 ]
 
-WScript.Echo(items.map(i => `${i}/${i}`).join("\n"))
+Editor.TraceOut(items.map(i => `${i}/${i}`).join("\n"), 0)

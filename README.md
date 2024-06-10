@@ -1,6 +1,6 @@
-# ts2jscript
+# ts2sakura
 
-TypeScript をトランスパイルして、 JScript(WSH) で実行できるjsファイルを作成するためのテンプレートです。
+TypeScript をトランスパイルして、 SakuraEditor で実行できるjsファイルを作成するためのテンプレートです。
 
 # Features
 

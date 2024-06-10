@@ -4,12 +4,15 @@
   "description": "TypeScript をトランスパイルして、 JScript(WSH) で実行できるjsファイルを作成するためのテンプレートです。",
   "main": "src/ts/index.ts",
   "type": "module",
+  "config": {
+    "sakura": "sakura.exe"
+  },
   "scripts": {
     "build": "npm run build:src/ts",
     "build:src/ts": "rollup -c rollup.config.js",
     "test": "npm run test:build && npm run test:run",
     "test:build": "rollup -c rollup.config.js --environment FROM:./src/test/index.ts,TO:./dist/test/index.js",
-    "test:run": "cscript //NoLogo .\\dist\\test\\index.js"
+    "test:run": "\"%npm_package_config_sakura%\" -M=.\\dist\\test\\index.js"
   },
   "repository": {
     "type": "git",

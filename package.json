@@ -1,7 +1,7 @@
 {
-  "name": "ts2jscript",
+  "name": "ts2sakura",
   "version": "0.0.2",
-  "description": "TypeScript をトランスパイルして、 JScript(WSH) で実行できるjsファイルを作成するためのテンプレートです。",
+  "description": "TypeScript をトランスパイルして、 SakuraEditor で実行できるjsファイルを作成するためのテンプレートです。",
   "main": "src/ts/index.ts",
   "type": "module",
   "config": {
@@ -22,7 +22,8 @@
   "keywords": [
     "TypeScript",
     "WSH",
-    "JScript"
+    "JScript",
+    "SakuraEditor"
   ],
   "author": "norihide-oka",
   "license": "MIT",

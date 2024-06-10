@@ -2,6 +2,7 @@ import typescript from "@rollup/plugin-typescript"
 import babel from "@rollup/plugin-babel"
 import commonjs from "@rollup/plugin-commonjs"
 import nodeResolve from "@rollup/plugin-node-resolve"
+import { string } from "rollup-plugin-string"
 import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs'
 import { resolve, relative } from "path"
 import encoder from 'iconv-lite'
@@ -82,6 +83,9 @@ function customPolyfill() {
 					'es6.regexp.to-string.js',
 					'es6.regexp.replace.js',
 					'es6.regexp.constructor.js',
+					'es6.regexp.split.js',
+					'es6.number.constructor.js',
+					'es6.regexp.match.js',
 				].find(i => id.endsWith(i)))
 				{
 					const empty = dir + "empty.js"
@@ -101,6 +105,15 @@ function customPolyfill() {
 				else
 					console.log(`\u001b[33mpolyfill not found [${id}] -> [${result}]\u001b[0m`)
 			}
+			else
+			{
+				const nodeImports = [
+					[/^child_process$/, "./src/node/child_process.js"]
+				]
+		 		let index = nodeImports.findIndex(([reg]) => reg.test(id))
+		 		if(index >= 0)
+		 			return nodeImports[index][1]
+			}
 		}
 	}
 }
@@ -108,9 +121,13 @@ function customPolyfill() {
 export const defaultItem = {
 	plugins: [
 		typescript(),
+		string({
+			include: "**/*.ps1"
+		}),
 		babel({
 			babelHelpers: 'bundled',
 			extensions: ['.js', '.ts'],
+			comments: false,
 		}),
 		commonjs(),
 		nodeResolve(),

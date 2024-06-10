@@ -1,6 +1,6 @@
 {
   "name": "ts2sakura",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "TypeScript をトランスパイルして、 SakuraEditor で実行できるjsファイルを作成するためのテンプレートです。",
   "main": "src/ts/index.ts",
   "type": "module",

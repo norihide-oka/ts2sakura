@@ -4,4 +4,4 @@ let items = [
 	"3:ううう",
 ]
 
-Editor.TraceOut(items.map(i => `${i}/${i}`).join("\n"), 0)
+console.log(items.map(i => `${i}/${i}`).join("\n"), 0)

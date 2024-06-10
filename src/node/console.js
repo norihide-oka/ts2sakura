@@ -1,8 +1,8 @@
 var console = {
 	log: function log(msg) {
-		return WScript.StdOut.WriteLine(msg);
+		return Editor.TraceOut(msg, 0);
 	},
 	error: function error(msg) {
-		return WScript.StdErr.WriteLine(msg);
+		return Editor.TraceOut(msg, 0);
 	}
 };

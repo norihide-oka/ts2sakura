@@ -3,63 +3,72 @@ import babel from "@rollup/plugin-babel"
 import commonjs from "@rollup/plugin-commonjs"
 import nodeResolve from "@rollup/plugin-node-resolve"
 import { string } from "rollup-plugin-string"
+import cleanup from 'rollup-plugin-cleanup';
 import { jscript } from "./src/rollup/jscript.js"
-import { readdirSync } from 'fs'
-import { resolve, relative } from "path"
+import { wshFiles, nodeFiles, contents } from "./src/rollup/files.js"
 
-let files = []
-if(process.env.FROM && process.env.TO)
-{
-	files.push([process.env.FROM, process.env.TO])
+const plugins = {
+	typescript: typescript(),
+	strings: string({
+		include: contents.map(i => ["**", i].join("/"))
+	}),
+	commonjs: commonjs(),
+	nodeResolve: nodeResolve(),
+	cleanup: cleanup(),
+	jscript: jscript({
+		silent: true,
+		forceEmpty: false
+	}),
+	babel: babel({
+		babelHelpers: 'bundled',
+		extensions: ['.js', '.ts'],
+		comments: false,
+		presets: [
+			[
+				"@babel/preset-env",
+				{
+					modules: false,
+					targets: { "ie": 8 },
+					loose: true,
+					useBuiltIns: "usage",
+					corejs: 3,
+				}
+			]
+		]
+	}),
 }
-else
-{
-	const current = "./"
-	const dir = "./src/ts"
-	const dist = "./dist"
-	const lib = "lib"
-	const ext = /\.ts$/
-	function readdir(dir, root = false)
-	{
-		return readdirSync(dir, {withFileTypes: true})
-			.filter(i => i.name !== lib && (i.isDirectory() || ext.test(i.name)))
-			.map(i => i.isDirectory() ? readdir(resolve(dir, i.name)) : resolve(dir, i.name))
-			.flat()
-	}
-	files.push(...readdir(dir, true)
-		.map(i => relative(dir, i))
-		.map(i => [resolve(dir, i), resolve(dist, i.replace(ext, ".js"))])
-		.map(i => i.map(ii => relative(current, ii)))
-	)
-}
 
-
-export const defaultItem = {
+const wshItem = {
 	plugins: [
-		typescript(),
-		string({
-			include: "**/*.ps1"
-		}),
-		babel({
-			babelHelpers: 'bundled',
-			extensions: ['.js', '.ts'],
-			comments: false,
-		}),
-		commonjs(),
-		nodeResolve(),
-		jscript(),
+		plugins.typescript,
+		plugins.strings,
+		plugins.babel,
+		plugins.commonjs,
+		plugins.nodeResolve,
+		plugins.jscript,
 	]
 }
 
-export default files.map(i => {
+const nodeItem = {
+	plugins: [
+		plugins.typescript,
+		plugins.strings,
+		plugins.commonjs,
+		plugins.nodeResolve,
+		plugins.cleanup,
+	]
+}
+
+function make(item, paths)
+{
 	return {
-		...defaultItem,
-		...{
-			input: i[0],
-			output: {
-				file: i[1],
-				format: "es"
-			}
-		}
+		...item,
+		input: paths[0],
+		output: { file: paths[1], format: "es" },
 	}
-})
+}
+
+export default [
+	wshFiles.map(i => make(wshItem, i)),
+	nodeFiles.map(i => make(nodeItem, i))
+].flat()

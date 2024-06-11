@@ -19,7 +19,7 @@ declare type CommandResult = {
 	ProcessID: number,
 	Status: number,
 	StdIn: { WriteLine: (text: string) => void },
-	StdOut: { ReadAll: () => string },
+	StdOut: { ReadAll: () => string, ReadLine: () => string },
 	StdErr: { WriteLine: (text: string) => void },
 }
 declare type ShellCommand = {
